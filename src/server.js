@@ -2,8 +2,9 @@ import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
 import { env } from "./utils/env.js";
-import {getAllFriends, getFriendById}  from "../src/services/friends.js";
-
+import friendsRouter from "./routers/friends.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
+import { notFoundHandler } from "./middlewares/notFoundHandler.js";
 
 export const setupServer = () => {
     
@@ -20,45 +21,11 @@ export const setupServer = () => {
 
     // routes
 
-    app.get("/friends", async (req, res) => {
-        const friends = await getAllFriends();
-        res.json({
-            status: 200,
-            message: "Successfully found contacts!",
-            data: friends,
-        });
-    });
-    app.get("/friends/:id", async (req, res) => {
-        const { id } = req.params;
-        const friend = await getFriendById(id);
+    app.use("/friends", friendsRouter);
 
-        if (!friend) {
-            res.status(404).json({
-                message: 'Friend not found'
-            });
-            return;
-	}
-        res.json({
-            status: 200,
-            message: `Successfully found contact with id ${id}!`,
-            data: friend
-        });
-    })
+    app.use(notFoundHandler);
 
-
-
-    app.use((req, res) => {
-        res.status(404).json({
-            message: 'Not found',
-        });
-    });
-
-    app.use((error, req, res, next) => {
-        res.status(500).json({
-            message:error.message,
-        })
-        next();
-    })
+    app.use(errorHandler)
    
     const PORT = Number(env("PORT")) || 3000;
 
