@@ -1,12 +1,13 @@
 import { FriendCollection } from "../db/models/Friend.js";
 import { calculatePaginationData } from "../utils/calculatePaginationData.js";
+import { SORT_ORDER } from "../constants/index.js";
 
-export const getFriends = async ({ perPage, page }) => {
+export const getFriends = async ({ perPage, page, sortBy="_id", sortOrder = SORT_ORDER[0] }) => {
     const skip = (page - 1) * perPage;
 
-    const friends = await FriendCollection.find().skip(skip).limit(perPage);
+    const friends = await FriendCollection.find().skip(skip).limit(perPage).sort({[sortBy]: sortOrder});
     const count = await FriendCollection.find().countDocuments();
-    
+
     const paginationData = calculatePaginationData({ count, perPage, page });
     
     return {

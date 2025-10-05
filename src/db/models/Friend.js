@@ -34,4 +34,7 @@ friendSchema.post("save", handleSaveError);
 friendSchema.pre("findOneAndUpdate", setUpdateOptions);
 friendSchema.post("findOneAndUpdate", handleSaveError);
 
-export const FriendCollection =  model("friend",friendSchema)
+export const sortFields = ["name", "phoneNumber", "email", "contactType"];
+
+
+export const FriendCollection =  model("friend", friendSchema)
