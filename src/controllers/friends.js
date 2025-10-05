@@ -1,8 +1,19 @@
 import createHttpError from 'http-errors';
-import { getAllFriends, getFriendById, createFriend, deleteFriend, updateFriend } from "../services/friends.js";
+import { getFriends, getFriendById, createFriend, deleteFriend, updateFriend } from "../services/friends.js";
+import { parsePaginationParams } from "../utils/parsePaginationParams.js";
+import { parseSortParams } from "../utils/parseSortParams.js";
+import { sortFields } from "../db/models/Friend.js";
 
 export const getAllFriendsController = async (req, res) => {
-        const friends = await getAllFriends();
+    const { perPage, page } = parsePaginationParams(req.query);
+    const { sortBy, SortOrder } = parseSortParams({...req.query, sortFields});
+
+    const friends = await getFriends({
+        perPage,
+        page,
+        sortBy,
+        SortOrder,
+    });
         res.json({
             status: 200,
             message: "Successfully found contacts!",
