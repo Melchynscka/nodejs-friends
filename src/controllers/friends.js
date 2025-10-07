@@ -3,16 +3,19 @@ import { getFriends, getFriendById, createFriend, deleteFriend, updateFriend } f
 import { parsePaginationParams } from "../utils/parsePaginationParams.js";
 import { parseSortParams } from "../utils/parseSortParams.js";
 import { sortFields } from "../db/models/Friend.js";
+import { parseFilterParams } from "../utils/parseFilterParams.js";
 
 export const getAllFriendsController = async (req, res) => {
     const { perPage, page } = parsePaginationParams(req.query);
-    const { sortBy, SortOrder } = parseSortParams({...req.query, sortFields});
+    const { sortBy, sortOrder } = parseSortParams({ ...req.query, sortFields });
+    const filter = parseFilterParams(req.query)
 
     const friends = await getFriends({
         perPage,
         page,
         sortBy,
-        SortOrder,
+        sortOrder,
+        filter,
     });
         res.json({
             status: 200,
