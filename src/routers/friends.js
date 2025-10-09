@@ -4,8 +4,11 @@ import { ctrWrapper } from "../utils/ctrlWrapper.js";
 import { validateBody } from "../utils/validateBody.js";
 import { createFriendSchema, createPatchSchema } from "../validation/friends.js";
 import { isValidId } from "../middlewares/isValidId.js";
+import { authenticate } from "../middlewares/authenticate.js";
 
 const friendsRouter = Router();
+
+friendsRouter.use(authenticate);
 
 friendsRouter.get("/", ctrWrapper(getAllFriendsController));
 

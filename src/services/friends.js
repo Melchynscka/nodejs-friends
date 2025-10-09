@@ -17,6 +17,9 @@ export const getFriends = async ({
         friendQuery.where("contactType")
             .equals(filter.contactType);
     };
+    if (filter.userId) {
+        friendQuery.where("userId").equals(filter.userId);
+    }
     const count = await FriendCollection.countDocuments();
     
     const friends = await friendQuery.skip(skip).limit(limit).sort({ [sortBy]: sortOrder }).exec();
@@ -24,24 +27,17 @@ export const getFriends = async ({
     const paginationData = calculatePaginationData({ count, perPage, page });
     
     return {
-        // page,
-        // perPage,
-        // friends,
-        // totalItems: count,
         data: friends,
         ...paginationData
     };
 };
 
-export const getFriendById = async (id) => {
-    const friend = await FriendCollection.findById(id);
-    return friend;
-};
+export const getFriendById = filter => FriendCollection.findById(filter); 
 
-export const createFriend = async (payload) => {
-    const friend = await FriendCollection.create(payload);
-    return friend;
-};
+    
+export const createFriend = async (payload) => FriendCollection.create(payload);
+
+
 
 export const deleteFriend = async (id) => {
     const friend = await FriendCollection.findByIdAndDelete({
