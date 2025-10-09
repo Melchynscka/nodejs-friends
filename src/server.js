@@ -3,8 +3,10 @@ import pino from 'pino-http';
 import cors from 'cors';
 import { env } from "./utils/env.js";
 import friendsRouter from "./routers/friends.js";
+import authRouter from './routers/auth.js';
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { notFoundHandler } from "./middlewares/notFoundHandler.js";
+import cookieParser from 'cookie-parser';
 
 export const setupServer = () => {
     
@@ -18,10 +20,12 @@ export const setupServer = () => {
     app.use(logger);
     app.use(cors());
     app.use(express.json());
+    app.use(cookieParser());
 
     // routes
 
     app.use("/friends", friendsRouter);
+    app.use("/auth", authRouter);
 
     app.use(notFoundHandler);
 

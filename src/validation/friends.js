@@ -8,7 +8,7 @@ export const createFriendSchema = Joi.object({
     }),
     email: Joi.string().min(3).max(20).pattern(emailRegexp),
     isFavourite: Joi.boolean(),
-    contactType: Joi.string().valid(...contactTypeList).required()
+    contactType: Joi.string().valid(...contactTypeList).required(),
 });
 
 export const createPatchSchema = Joi.object({

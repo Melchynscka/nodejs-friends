@@ -8,6 +8,7 @@ import { parseFilterParams } from "../utils/parseFilterParams.js";
 export const getAllFriendsController = async (req, res) => {
     const { perPage, page } = parsePaginationParams(req.query);
     const { sortBy, sortOrder } = parseSortParams({ ...req.query, sortFields });
+    const { _id: userId } = req.user;
     const filter = parseFilterParams(req.query)
 
     const friends = await getFriends({
@@ -15,7 +16,7 @@ export const getAllFriendsController = async (req, res) => {
         page,
         sortBy,
         sortOrder,
-        filter,
+        filter: {...filter, userId},
     });
         res.json({
             status: 200,
@@ -25,7 +26,8 @@ export const getAllFriendsController = async (req, res) => {
 };
 export const getFriendByIdController = async (req, res) => {
     const { id } = req.params;
-    const friend = await getFriendById(id);
+    const { _id: userId } = req.user;
+    const friend = await getFriendById({_id: id, userId});
 
     if (!friend) {
         throw createHttpError(404, 'Friends not found');
@@ -38,18 +40,20 @@ export const getFriendByIdController = async (req, res) => {
 };
 
 export const createFriendController = async (req, res) => {
-    const body = await createFriend(req.body);
+    const { _id: userId } = req.user;
 
+    const body = await createFriend({...req.body, userId});
     res.status(201).json({
         status: 201,
         message: "Successfully created a friend!",
-        data: body
+        data: body,
     });
 };
 
 export const deleteFriendController = async (req, res, next) => {
     const { id } = req.params;
-    const friend = await deleteFriend(id);
+    const { _id: userId } = req.user;
+    const friend = await deleteFriend({_id: id, userId});
 
     if (!friend) {
     next(createHttpError(404, 'Friend not found'));
@@ -61,7 +65,8 @@ export const deleteFriendController = async (req, res, next) => {
 
 export const upsertFriendController = async (req, res, next) => {
     const { id } = req.params;
-    const result = await updateFriend(id, req.body, {
+    const { _id: userId } = req.user;
+    const result = await updateFriend({_id: id, userId}, req.body, {
         upsert: true,
     });
     if (!result) {
@@ -79,7 +84,8 @@ export const upsertFriendController = async (req, res, next) => {
 
 export const patchFriendController = async (req, res, next) => {
     const { id } = req.params;
-    const result = await updateFriend(id, req.body);
+    const { _id: userId } = req.user;
+    const result = await updateFriend({_id: id, userId}, req.body);
     if (!result) {
         next(createHttpError(404, "friend not found"))
         return
