@@ -40,7 +40,6 @@ export const getFriendByIdController = async (req, res) => {
 };
 
 export const createFriendController = async (req, res) => {
-    console.log(req.user);
     const { _id: userId } = req.user;
 
     const body = await createFriend({...req.body, userId});
