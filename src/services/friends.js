@@ -17,6 +17,7 @@ export const getFriends = async ({
         friendQuery.where("contactType")
             .equals(filter.contactType);
     };
+    
     if (filter.userId) {
         friendQuery.where("userId").equals(filter.userId);
     }
