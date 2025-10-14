@@ -4,6 +4,11 @@ import { parsePaginationParams } from "../utils/parsePaginationParams.js";
 import { parseSortParams } from "../utils/parseSortParams.js";
 import { sortFields } from "../db/models/Friend.js";
 import { parseFilterParams } from "../utils/parseFilterParams.js";
+import { saveFileToUploadDir } from '../utils/saveFileToUploadDir.js';
+import { saveFileToCloudinary } from '../utils/saveFileToCloudinary.js';
+import { env } from "../utils/env.js";
+
+const enableCloudinary = env("ENABLE_CLOUDINARY")
 
 export const getAllFriendsController = async (req, res) => {
     const { perPage, page } = parsePaginationParams(req.query);
@@ -40,9 +45,20 @@ export const getFriendByIdController = async (req, res) => {
 };
 
 export const createFriendController = async (req, res) => {
+    let photo;
+    if (req.file) {
+        if (enableCloudinary === "true") {
+            photo = await saveFileToCloudinary(req.file, "photoes")
+        }
+        else {
+            photo = await saveFileToUploadDir(req.file);
+        }; 
+    };
+    
+    
     const { _id: userId } = req.user;
 
-    const body = await createFriend({...req.body, userId});
+    const body = await createFriend({...req.body, userId, photo});
     res.status(201).json({
         status: 201,
         message: "Successfully created a friend!",
